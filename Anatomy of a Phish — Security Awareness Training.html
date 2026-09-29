@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Anatomy of a Phish — Security Awareness Training</title>
+  <meta name="description" content="Interactive security awareness training: how phishing works, how to spot the tells across email, SMS, voice and QR codes, and what to do if you clicked.">
+  <meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141F2B;
+    --ink-soft:#3C4A59;
+    --paper:#F1F0EA;
+    --paper-raised:#FFFFFF;
+    --line:#D8D6CC;
+    --amber:#C8791E;
+    --amber-soft:#F4E3C8;
+    --danger:#B23A2E;
+    --danger-soft:#F6DEDA;
+    --safe:#1F6E4A;
+    --safe-soft:#DCEBE1;
+    --shadow: 0 1px 2px rgba(20,31,43,0.06), 0 8px 24px rgba(20,31,43,0.06);
+    box-sizing:border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#ECE9E0;
+      --ink-soft:#B7BEC6;
+      --paper:#171B20;
+      --paper-raised:#1F252C;
+      --line:#323942;
+      --amber:#E3A455;
+      --amber-soft:#3A3020;
+      --danger:#E08277;
+      --danger-soft:#3A2422;
+      --safe:#79C29E;
+      --safe-soft:#1E2E27;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#ECE9E0;
+    --ink-soft:#B7BEC6;
+    --paper:#171B20;
+    --paper-raised:#1F252C;
+    --line:#323942;
+    --amber:#E3A455;
+    --amber-soft:#3A3020;
+    --danger:#E08277;
+    --danger-soft:#3A2422;
+    --safe:#79C29E;
+    --safe-soft:#1E2E27;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; scroll-padding-top: calc(76px + env(safe-area-inset-top, 0px)); background:var(--paper); }
+  body{
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{ font-family:'Newsreader', Georgia, serif; font-weight:600; line-height:1.15; color:var(--ink); }
+  p{ color:var(--ink-soft); max-width:62ch; }
+  a{ color:inherit; }
+  .wrap{ max-width:920px; margin:0 auto; padding:0 24px; }
+  section{ padding:88px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+
+  /* NAV */
+  header.topbar{
+    position:sticky; top:0; z-index:50;
+    padding-top: env(safe-area-inset-top, 0px);
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{ max-width:920px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .brand{ font-family:'Newsreader', serif; font-weight:600; font-size:17px; display:flex; align-items:center; gap:8px; white-space:nowrap; }
+  .brand .hook{ font-size:19px; }
+  nav.crumbs{ display:flex; gap:2px; overflow-x:auto; scrollbar-width:none; }
+  nav.crumbs::-webkit-scrollbar{ display:none; }
+  nav.crumbs a{
+    font-size:13px; color:var(--ink-soft); text-decoration:none; white-space:nowrap;
+    padding:7px 11px; border-radius:20px; transition:background .15s, color .15s;
+  }
+  nav.crumbs a:hover{ background:var(--paper-raised); color:var(--ink); }
+  nav.crumbs a.active{ background:var(--ink); color:var(--paper); }
+  @media (max-width:560px){
+    .brand span.full{ display:none; }
+    .icon-btn{ width:30px; height:30px; font-size:13px; }
+    .topbar-inner{ gap:8px; padding:10px 16px; }
+  }
+  .topbar-tools{ display:flex; align-items:center; gap:8px; }
+  .icon-btn{
+    font:inherit; font-size:15px; line-height:1; cursor:pointer;
+    width:34px; height:34px; display:grid; place-items:center;
+    border-radius:50%; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink-soft);
+    transition:color .15s, border-color .15s;
+  }
+  .icon-btn:hover{ color:var(--ink); border-color:var(--ink-soft); }
+  .read-progress{ position:absolute; left:0; bottom:-1px; height:2px; width:0%; background:var(--amber); transition:width .1s linear; }
+  .topbar{ position:sticky; top:0; }
+
+  /* HERO */
+  .hero{ padding:64px 0 88px; }
+  .kicker{ font-size:14px; color:var(--amber); font-weight:500; margin-bottom:14px; }
+  .hero h1{ font-size:clamp(34px,5.4vw,54px); max-width:14ch; margin-bottom:20px; letter-spacing:-0.01em; }
+  .hero p.lede{ font-size:18px; max-width:52ch; }
+  .hero-cta{ margin-top:32px; display:flex; gap:12px; flex-wrap:wrap; }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; font-family:inherit; font-size:15px; font-weight:600;
+    padding:12px 20px; border-radius:8px; border:1px solid transparent; cursor:pointer; text-decoration:none;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{ transform:translateY(1px); }
+  .btn-primary{ background:var(--ink); color:var(--paper); }
+  :root[data-theme="dark"] .btn-primary, @media (prefers-color-scheme:dark){ .btn-primary{ } }
+  .btn-ghost{ background:transparent; border-color:var(--line); color:var(--ink); }
+
+  /* stat strip */
+  .stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-top:56px; }
+  .stat{ background:var(--paper-raised); padding:20px 18px; }
+  .stat b{ font-family:'Newsreader',serif; font-size:28px; display:block; color:var(--amber); }
+  .stat span{ font-size:13px; color:var(--ink-soft); }
+
+  .eyebrow{ font-size:13px; color:var(--ink-soft); margin-bottom:10px; }
+  h2.section-title{ font-size:clamp(26px,3.6vw,34px); max-width:20ch; margin-bottom:14px; }
+  .section-intro{ margin-bottom:40px; }
+
+  /* EMAIL SPECIMEN */
+  .specimen{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);
+    overflow:hidden; margin-top:8px; position:relative;
+  }
+  .specimen-bar{ display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--line); }
+  .dot{ width:9px; height:9px; border-radius:50%; background:var(--line); }
+  .specimen-bar .tag{ margin-left:auto; font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; }
+  .mail-head{ padding:18px 20px 14px; border-bottom:1px solid var(--line); }
+  .mail-row{ display:flex; gap:10px; font-size:14px; margin-bottom:6px; }
+  .mail-row .k{ color:var(--ink-soft); width:52px; flex-shrink:0; }
+  .mail-row .v{ font-family:'IBM Plex Mono',monospace; font-size:13px; }
+  .mail-subject{ font-weight:600; font-size:15.5px; margin-top:6px; }
+  .mail-body{ padding:22px 22px 26px; font-size:15px; }
+  .mail-body p{ max-width:none; margin-bottom:12px; color:var(--ink); }
+  .flag{
+    position:relative; cursor:pointer; border-bottom:2px dotted var(--danger); background:transparent;
+    font:inherit; color:inherit; padding:0; display:inline;
+  }
+  .flag .pin{
+    display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%;
+    background:var(--danger); color:#fff; font-size:11px; font-weight:700; margin-left:3px; vertical-align:middle;
+  }
+  .flag-note{
+    display:none; position:absolute; left:0; top:calc(100% + 8px); width:min(280px,80vw); z-index:20;
+    background:var(--ink); color:var(--paper); font-size:13px; line-height:1.4; padding:12px 14px; border-radius:8px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.25);
+  }
+  .flag.open .flag-note{ display:block; }
+  .flag-note b{ color:var(--amber); display:block; margin-bottom:4px; font-size:12.5px; }
+
+  .fake-btn{ display:inline-block; margin-top:6px; padding:10px 18px; background:var(--danger); color:#fff; border-radius:6px; font-weight:600; font-size:14px; text-decoration:none; }
+  .found-counter{ margin-top:18px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center; gap:8px; }
+  .found-counter b{ color:var(--ink); }
+
+  /* URL comparison */
+  .url-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px; }
+  @media (max-width:640px){ .url-grid{ grid-template-columns:1fr; } }
+  .browser{ border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--paper-raised); }
+  .browser .addr{
+    display:flex; align-items:center; gap:8px; padding:12px 14px; background:var(--paper);
+    border-bottom:1px solid var(--line); font-family:'IBM Plex Mono',monospace; font-size:13.5px;
+  }
+  .browser .addr .lock{ font-size:13px; }
+  .browser .page{ padding:26px 18px; text-align:center; }
+  .browser .page .logo{ font-family:'Newsreader',serif; font-weight:600; font-size:20px; margin-bottom:10px; }
+  .browser.safe{ box-shadow:0 0 0 2px var(--safe) inset; }
+  .browser.risky{ box-shadow:0 0 0 2px var(--danger) inset; }
+  .verdict{ display:inline-block; margin-top:14px; font-size:12.5px; font-weight:600; padding:5px 11px; border-radius:20px; }
+  .verdict.safe{ background:var(--safe-soft); color:var(--safe); }
+  .verdict.risky{ background:var(--danger-soft); color:var(--danger); }
+  .url-callout{ font-size:13.5px; margin-top:10px; color:var(--ink-soft); padding:0 14px 16px; }
+  .url-callout code{ font-family:'IBM Plex Mono',monospace; background:var(--paper); padding:1px 5px; border-radius:4px; color:var(--ink); }
+
+  /* tactics */
+  .tactics{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px; }
+  @media (max-width:640px){ .tactics{ grid-template-columns:1fr; } }
+  .tactic{ border:1px solid var(--line); border-radius:12px; padding:20px; background:var(--paper-raised); }
+  .tactic h3{ font-size:17px; margin-bottom:8px; display:flex; align-items:baseline; gap:10px; }
+  .tactic .glyph{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--amber); border:1px solid var(--amber); border-radius:5px; padding:2px 6px; }
+  .tactic p{ font-size:14.5px; margin-bottom:0; }
+  .tactic .line{ margin-top:10px; font-size:13.5px; font-style:italic; color:var(--ink); border-left:2px solid var(--amber); padding-left:10px; }
+
+  /* case files */
+  .case{ border:1px solid var(--line); border-radius:12px; background:var(--paper-raised); padding:22px 22px 20px; margin-bottom:16px; }
+  .case-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+  .case-head h3{ font-size:18px; }
+  .case-tag{ font-size:11.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.04em; padding:4px 9px; border-radius:5px; background:var(--amber-soft); color:var(--amber); }
+  .case p{ font-size:14.5px; max-width:none; }
+  .case .lesson{ margin-top:12px; font-size:13.5px; color:var(--ink); background:var(--paper); border-radius:8px; padding:10px 13px; }
+  .case .lesson b{ color:var(--safe); }
+
+  /* checklist */
+  .checklist{ list-style:none; margin-top:10px; }
+  .checklist li{ display:flex; gap:12px; padding:13px 0; border-bottom:1px solid var(--line); font-size:15px; }
+  .checklist li:last-child{ border-bottom:none; }
+  .checklist .mark{ flex-shrink:0; width:22px; height:22px; border-radius:50%; background:var(--safe-soft); color:var(--safe); display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; margin-top:1px; }
+  .checklist b{ display:block; margin-bottom:2px; }
+  .checklist span.sub{ color:var(--ink-soft); font-size:14px; }
+
+  /* quiz */
+  .quiz-shell{ border:1px solid var(--line); border-radius:14px; background:var(--paper-raised); box-shadow:var(--shadow); overflow:hidden; }
+  .quiz-progress{ height:4px; background:var(--line); }
+  .quiz-progress-bar{ height:100%; background:var(--amber); width:0%; transition:width .3s ease; }
+  .quiz-body{ padding:30px 28px 28px; }
+  .quiz-meta{ font-size:12.5px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-bottom:14px; }
+  .quiz-q{ font-size:19px; font-family:'Newsreader',serif; font-weight:600; margin-bottom:20px; max-width:none; }
+  .quiz-opts{ display:flex; flex-direction:column; gap:10px; }
+  .quiz-opt{
+    text-align:left; font-family:inherit; font-size:15px; padding:13px 16px; border-radius:9px; border:1px solid var(--line);
+    background:var(--paper); cursor:pointer; color:var(--ink); transition:border-color .15s, background .15s;
+  }
+  .quiz-opt:hover{ border-color:var(--ink-soft); }
+  .quiz-opt.correct{ border-color:var(--safe); background:var(--safe-soft); }
+  .quiz-opt.incorrect{ border-color:var(--danger); background:var(--danger-soft); }
+  .quiz-opt:disabled{ cursor:default; }
+  .quiz-explain{ margin-top:16px; font-size:14px; padding:14px 16px; border-radius:9px; background:var(--paper); display:none; }
+  .quiz-explain.show{ display:block; }
+  .quiz-explain b{ display:block; margin-bottom:4px; }
+  .quiz-footer{ display:flex; justify-content:flex-end; margin-top:20px; }
+  .quiz-result{ text-align:center; padding:12px 0; }
+  .quiz-result .score{ font-family:'Newsreader',serif; font-size:48px; color:var(--amber); }
+  .quiz-result p{ margin:10px auto 22px; }
+
+  footer{ padding:48px 0 calc(48px + env(safe-area-inset-bottom,0px)); text-align:center; }
+  footer p{ margin:0 auto; font-size:13px; color:var(--ink-soft); }
+
+  /* CHANNELS — email isn't the only door */
+  .channels{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:8px; }
+  @media (max-width:720px){ .channels{ grid-template-columns:1fr; } }
+  .channel{ border:1px solid var(--line); border-radius:12px; background:var(--paper-raised); padding:20px; }
+  .channel-head{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .channel-head .ico{ font-size:20px; }
+  .channel-head h3{ font-size:17px; }
+  .channel-head .glyph{ margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); border:1px solid var(--line); border-radius:5px; padding:2px 6px; text-transform:uppercase; letter-spacing:.04em; }
+  .channel p{ font-size:14.5px; margin-bottom:10px; }
+  .channel .sample{
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.5;
+    background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--danger);
+    border-radius:8px; padding:11px 13px; color:var(--ink);
+  }
+  .channel .sample b{ color:var(--danger); font-weight:600; }
+  .channel .telltale{ margin-top:10px; font-size:13.5px; color:var(--ink); }
+  .channel .telltale b{ color:var(--ink); }
+
+  /* INCIDENT RESPONSE — timeline */
+  .timeline{ list-style:none; margin-top:8px; counter-reset:step; }
+  .timeline li{
+    position:relative; padding:0 0 22px 52px; counter-increment:step;
+    border-left:1px solid var(--line); margin-left:14px;
+  }
+  .timeline li:last-child{ border-left-color:transparent; padding-bottom:0; }
+  .timeline li::before{
+    content: counter(step); position:absolute; left:-15px; top:-2px;
+    width:30px; height:30px; border-radius:50%; display:grid; place-items:center;
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:500;
+    background:var(--paper-raised); border:1px solid var(--line); color:var(--ink-soft);
+  }
+  .timeline li.urgent::before{ background:var(--danger); border-color:var(--danger); color:#fff; }
+  .timeline li b{ display:block; font-size:15.5px; margin-bottom:3px; }
+  .timeline li p{ font-size:14.5px; max-width:none; }
+  .timeline .time{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--amber); display:block; margin-bottom:2px; }
+
+  .callout{
+    border:1px solid var(--line); border-left:3px solid var(--amber); border-radius:10px;
+    background:var(--paper-raised); padding:18px 20px; margin-top:20px;
+  }
+  .callout.danger{ border-left-color:var(--danger); }
+  .callout.safe{ border-left-color:var(--safe); }
+  .callout b.title{ display:block; font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-bottom:6px; }
+  .callout p{ font-size:14.5px; max-width:none; margin-bottom:0; }
+  .callout p + p{ margin-top:8px; }
+
+  /* CHEAT SHEET */
+  .cheat{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:8px; }
+  @media (max-width:720px){ .cheat{ grid-template-columns:1fr; } }
+  .cheat-card{ border:1px solid var(--line); border-radius:12px; background:var(--paper-raised); padding:18px; }
+  .cheat-card h3{ font-size:15.5px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+  .cheat-card h3 .emoji{ font-size:16px; }
+  .cheat-card ul{ list-style:none; }
+  .cheat-card li{ font-size:14px; color:var(--ink-soft); padding:5px 0 5px 18px; position:relative; line-height:1.45; }
+  .cheat-card li::before{ content:"→"; position:absolute; left:0; color:var(--amber); font-weight:600; }
+  .cheat-card li b{ color:var(--ink); font-weight:600; }
+
+  /* GLOSSARY */
+  .glossary{ display:grid; grid-template-columns:repeat(2,1fr); gap:0 28px; margin-top:8px; }
+  @media (max-width:720px){ .glossary{ grid-template-columns:1fr; } }
+  .glossary div{ padding:14px 0; border-bottom:1px solid var(--line); }
+  .glossary dt{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--amber); margin-bottom:4px; }
+  .glossary dd{ margin:0; font-size:14.5px; color:var(--ink-soft); }
+  .glossary dd b{ color:var(--ink); }
+
+  /* COMPARE TABLE */
+  .compare{ width:100%; border-collapse:collapse; margin-top:8px; font-size:14.5px; }
+  .compare th, .compare td{ text-align:left; padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .compare thead th{ font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:600; }
+  .compare tbody th{ font-weight:600; color:var(--ink); width:26%; }
+  .compare td{ color:var(--ink-soft); }
+  .compare-wrap{ border:1px solid var(--line); border-radius:12px; background:var(--paper-raised); overflow-x:auto; }
+
+  /* prev / next */
+  .pager{ display:flex; justify-content:space-between; gap:14px; margin-top:48px; padding-top:24px; border-top:1px solid var(--line); flex-wrap:wrap; }
+  .pager a{
+    font-size:14px; color:var(--ink-soft); text-decoration:none; display:flex; flex-direction:column; gap:2px;
+    padding:12px 16px; border:1px solid var(--line); border-radius:10px; background:var(--paper-raised);
+    transition:border-color .15s, color .15s; max-width:46%;
+  }
+  .pager a:hover{ border-color:var(--ink-soft); color:var(--ink); }
+  .pager a span{ font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); }
+  .pager a.right{ text-align:right; margin-left:auto; }
+  .pager a b{ font-size:14.5px; font-weight:600; color:var(--ink); }
+
+  /* badge row under hero */
+  .pill-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+  .pill{ font-size:12.5px; color:var(--ink-soft); border:1px solid var(--line); border-radius:20px; padding:5px 12px; background:var(--paper-raised); }
+
+  ::selection{ background:var(--amber-soft); }
+
+  @media print{
+    header.topbar, .pager, .hero-cta, .icon-btn, .read-progress{ display:none !important; }
+    body{ background:#fff; }
+    section{ padding:24px 0; page-break-inside:avoid; }
+    .specimen, .case, .tactic, .channel, .cheat-card, .compare-wrap{ box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="read-progress" id="read-progress"></div>
+  <div class="topbar-inner">
+    <div class="brand"><span class="hook">🎣</span> <span class="full">Anatomy of a Phish</span></div>
+    <nav class="crumbs">
+      <a href="#emails">Emails</a>
+      <a href="#websites">Websites</a>
+      <a href="#tactics">Tactics</a>
+      <a href="#channels">Beyond email</a>
+      <a href="#cases">Case files</a>
+      <a href="#response">If you clicked</a>
+      <a href="#cheatsheet">Cheat sheet</a>
+      <a href="#practices">Habits</a>
+      <a href="#glossary">Glossary</a>
+      <a href="#quiz">Quiz</a>
+    </nav>
+    <div class="topbar-tools">
+      <button class="icon-btn" id="theme-btn" title="Toggle light / dark" aria-label="Toggle light or dark theme">◐</button>
+      <button class="icon-btn" id="print-btn" title="Print or save as PDF" aria-label="Print or save as PDF">⎙</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="kicker">Security awareness training</div>
+      <h1>Every attack starts with a message someone almost believed.</h1>
+      <p class="lede">Phishing doesn't rely on breaking your systems — it relies on you clicking, replying, or trusting for just one second longer than you should. This module walks through what to look for, why the tricks work, and what to do instead. About 15 minutes, one quiz at the end.</p>
+      <div class="hero-cta">
+        <a href="#emails" class="btn btn-primary">Start with a real example →</a>
+        <a href="#response" class="btn btn-ghost">I clicked something — help</a>
+        <a href="#quiz" class="btn btn-ghost">Skip to the quiz</a>
+      </div>
+      <div class="pill-row">
+        <span class="pill">~20 min</span>
+        <span class="pill">No technical background needed</span>
+        <span class="pill">13-question knowledge check</span>
+        <span class="pill">Works offline</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>90%+</b><span>of breaches begin with a phishing or social-engineering email</span></div>
+        <div class="stat"><b>&lt;60s</b><span>typical time from open to click on a convincing lure</span></div>
+        <div class="stat"><b>1 report</b><span>is often enough to get a campaign blocked for everyone</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="emails">
+    <div class="wrap">
+      <div class="eyebrow">Exhibit A — inbox</div>
+      <h2 class="section-title">Spot the tells in a phishing email</h2>
+      <div class="section-intro"><p>Real phishing emails are rarely riddled with typos anymore. Tap each underlined phrase below to see what actually gives this one away.</p></div>
+
+      <div class="specimen">
+        <div class="specimen-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="tag">INBOX — 1 of 47</span>
+        </div>
+        <div class="mail-head">
+          <div class="mail-row"><span class="k">From</span><span class="v" id="sender-flag-wrap"></span></div>
+          <div class="mail-row"><span class="k">To</span><span class="v">you@yourcompany.com</span></div>
+          <div class="mail-subject" id="subject-flag-wrap"></div>
+        </div>
+        <div class="mail-body" id="mail-body"></div>
+      </div>
+
+      <div class="found-counter">🔍 <span><b id="found-count">0</b> of <b>6</b> red flags found — tap the underlined text above</span></div>
+    </div>
+  </section>
+
+  <section id="websites">
+    <div class="wrap">
+      <div class="eyebrow">Exhibit B — address bar</div>
+      <h2 class="section-title">Fake websites live in the URL, not the design</h2>
+      <div class="section-intro"><p>A cloned login page can be pixel-perfect. The giveaway is almost always the domain itself — read it slowly, right to left from the first single slash.</p></div>
+
+      <div class="url-grid">
+        <div class="browser risky">
+          <div class="addr"><span class="lock">🔓</span> <span>https://accounts-secure-login.paypa1-verify.com</span></div>
+          <div class="page">
+            <div class="logo">PayPal</div>
+            <p style="font-size:13.5px;">Confirm your identity to restore account access</p>
+            <span class="verdict risky">Impersonation domain</span>
+          </div>
+        </div>
+        <div class="browser safe">
+          <div class="addr"><span class="lock">🔒</span> <span>https://www.paypal.com/signin</span></div>
+          <div class="page">
+            <div class="logo">PayPal</div>
+            <p style="font-size:13.5px;">Log in to your account</p>
+            <span class="verdict safe">Legitimate domain</span>
+          </div>
+        </div>
+      </div>
+      <div class="url-callout">The real domain is exactly <code>paypal.com</code>. The fake one strings extra words before a look-alike domain (<code>paypa1-verify.com</code>, with a digit "1" standing in for "l") — the part that matters is always the piece right before the first single "/". A padlock icon only means the connection is encrypted, not that the site is trustworthy; attackers buy valid certificates too.</div>
+    </div>
+  </section>
+
+  <section id="tactics">
+    <div class="wrap">
+      <div class="eyebrow">Under the hood</div>
+      <h2 class="section-title">The psychology attackers lean on</h2>
+      <div class="section-intro"><p>Phishing is social engineering delivered by email, text, or phone. These are the emotional levers that show up again and again, often stacked together.</p></div>
+      <div class="tactics">
+        <div class="tactic"><h3>Urgency <span class="glyph">clock</span></h3><p>A deadline, expiring account, or "act now" framing that pressures you to skip your normal checks.</p><div class="line">"Your access will be suspended in 2 hours."</div></div>
+        <div class="tactic"><h3>Authority <span class="glyph">badge</span></h3><p>The message appears to come from a boss, executive, IT, or a well-known brand — people comply faster with perceived power.</p><div class="line">"This is the CEO — I need a favor before my flight."</div></div>
+        <div class="tactic"><h3>Fear <span class="glyph">alert</span></h3><p>A threat of consequences — a fine, a locked account, legal trouble, a security incident — that triggers a reflexive response.</p><div class="line">"Unusual sign-in detected on your account."</div></div>
+        <div class="tactic"><h3>Curiosity <span class="glyph">eye</span></h3><p>Something too intriguing to ignore, like a shared document, a delivery, or a photo you're tagged in.</p><div class="line">"See who viewed your profile this week."</div></div>
+        <div class="tactic"><h3>Familiarity <span class="glyph">link</span></h3><p>Spoofed identities of coworkers, vendors, or services you already use, so the request feels routine.</p><div class="line">"Following up on the invoice from last week."</div></div>
+        <div class="tactic"><h3>Reciprocity <span class="glyph">gift</span></h3><p>An unsolicited favor, refund, or gift that creates a subtle obligation to respond quickly.</p><div class="line">"You've been selected for a reward — claim by Friday."</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="channels">
+    <div class="wrap">
+      <div class="eyebrow">Exhibit C — other doors</div>
+      <h2 class="section-title">Email is only the front entrance</h2>
+      <div class="section-intro"><p>The same six levers from the previous section get reused across every channel your phone and desk can reach. What changes is the surface — and the fact that people are more relaxed on a small screen, mid-task, with no time to hover a link.</p></div>
+
+      <div class="channels">
+
+        <div class="channel">
+          <div class="channel-head"><span class="ico">📱</span><h3>Smishing</h3><span class="glyph">SMS / WhatsApp</span></div>
+          <p>Text messages and WhatsApp chats carrying the same lures. The medium is trusted and the screen is small, which is exactly why it works so well.</p>
+          <div class="sample">INR 4,99,999 has been credited to your HDFC account. To complete KYC, update your details within <b>24 hours</b>: <b>hdfc-kyc-verify.in/claims</b></div>
+          <div class="telltale"><b>Telltales —</b> unsolicited prize or refund news; a short link with no clear destination; a count-down deadline; requests to "share OTP" or enter a PIN, which no bank will ever ask for.</div>
+        </div>
+
+        <div class="channel">
+          <div class="channel-head"><span class="ico">📞</span><h3>Vishing</h3><span class="glyph">Voice call</span></div>
+          <p>A phone call that borrows authority and familiarity — a fake bank fraud desk, a spoofed internal helpdesk, a "senior leader" asking for a favour.</p>
+          <div class="sample">"This is the fraud department. Your card is compromised. To secure it I need you to read the six-digit code that just <b>arrived on your phone</b> back to me."</div>
+          <div class="telltale"><b>Telltales —</b> caller ID is spoofable, so a familiar number proves nothing; you are never asked to read out an OTP; pressure to "act before the money leaves" creates manufactured urgency.</div>
+        </div>
+
+        <div class="channel">
+          <div class="channel-head"><span class="ico">📷</span><h3>Quishing</h3><span class="glyph">QR code</span></div>
+          <p>A QR code in a PDF, a poster, a sticker in a car park, or an email. Scanning jumps you straight to a login page with no address bar to inspect first.</p>
+          <div class="sample">Physical sticker on a parking meter: <b>"Scan to pay 50% less — scan to claim your free voucher"</b></div>
+          <div class="telltale"><b>Telltales —</b> codes to "avoid a service fee" or claim a reward; anywhere that genuinely needs payment already has a phone number and a printed receipt; the destination can't be checked until after you've landed on it.</div>
+        </div>
+
+        <div class="channel">
+          <div class="channel-head"><span class="ico">💬</span><h3>Phishing via chat &amp; social</h3><span class="glyph">Instant messaging</span></div>
+          <p>Attackers compromise a real friend's account and send a message from it. Because the contact is genuine, your normal scepticism switches off completely.</p>
+          <div class="sample">A known contact, from a number you've messaged for years: <b>"I'm in an emergency, can't talk — can you send me ₹20,000 right now? Don't tell anyone."</b></div>
+          <div class="telltale"><b>Telltales —</b> secrecy plus urgency is a classic pairing; a new account in a group chat asking people to "verify details"; a "shared document" that needs you to "sign in again".</div>
+        </div>
+
+        <div class="channel">
+          <div class="channel-head"><span class="ico">📞</span><h3>Deepfake voice &amp; video</h3><span class="glyph">Emerging</span></div>
+          <p>Short voice-cloning clips built from public audio can now imitate a familiar voice convincingly enough for a payment approval. Treat any voice-based request as one channel of evidence, not two.</p>
+          <div class="sample">A familiar voice, "Hi, it's me. I'm in a meeting, just approve the payment on my behalf, I'll explain later."</div>
+          <div class="telltale"><b>Telltales —</b> the call arrives with a second, unrelated request; the caller is oddly unbothered by being questioned; the pressure is to complete it quickly, right now.</div>
+        </div>
+
+        <div class="channel">
+          <div class="channel-head"><span class="ico">📰</span><h3>Search &amp; sponsored ads</h3><span class="glyph">Malvertising</span></div>
+          <p>Fake "support" phone numbers and update pages bought at the top of search results for a brand you just called. You searched, so the URL looks plausible.</p>
+          <div class="sample">Searching for <b>"yourbrand" customer care number</b> → top result is a sponsored ad leading to <b>yourbrand-helpdesk-support.net</b></div>
+          <div class="telltale"><b>Telltales —</b> the number differs from the one on the back of your card; the page asks for a password or OTP "for verification"; sponsored results are ads, not editorial ranking.</div>
+        </div>
+
+      </div>
+
+      <div class="callout danger">
+        <b class="title">The one rule that covers every channel</b>
+        <p>If a message creates a feeling you should act <em>right now</em> — money moving, an account closing, a leader waiting, a prize expiring — that feeling is the payload. Any request that carries urgency gets verified through a channel that did not initiate it, before a single detail is entered.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="cases">
+    <div class="wrap">
+      <div class="eyebrow">From the field</div>
+      <h2 class="section-title">Three ways this plays out</h2>
+      <div class="section-intro"><p>Composite scenarios based on patterns seen across many real incidents.</p></div>
+
+      <div class="case">
+        <div class="case-head"><h3>The "urgent wire transfer"</h3><span class="case-tag">Business email compromise</span></div>
+        <p>A finance employee receives an email that appears to be from their CEO, sent while she is "in back-to-back meetings," asking for a same-day payment to a new vendor account. The tone is terse and time-pressured, matching how the real executive writes — attackers had studied her public talks and old emails first.</p>
+        <div class="lesson"><b>Lesson —</b> Any request to move money or change payment details gets verified through a second channel, like a phone call to a known number, no matter who appears to be asking.</div>
+      </div>
+
+      <div class="case">
+        <div class="case-head"><h3>The cloned login page</h3><span class="case-tag">Credential harvesting</span></div>
+        <p>Employees get an email about a shared file that needs "re-authentication." The link leads to a login page identical to the company's real single sign-on screen, hosted on a domain that differs by one hyphen. Credentials entered there are captured instantly and often replayed within minutes.</p>
+        <div class="lesson"><b>Lesson —</b> Reach internal tools by typing the known address or using a saved bookmark, never by clicking a link in an email asking you to "re-verify."</div>
+      </div>
+
+      <div class="case">
+        <div class="case-head"><h3>The MFA fatigue call</h3><span class="case-tag">Vishing</span></div>
+        <p>After stolen credentials trigger repeated login prompts, the target's phone rings. The caller, posing as IT support, apologizes for "the flood of notifications" and asks them to approve one so the system can be fixed. It's the same push notification the attacker is trying to get approved.</p>
+        <div class="lesson"><b>Lesson —</b> IT will never ask you to approve a login you didn't initiate. Unexpected MFA prompts get denied and reported, not approved to make them stop.</div>
+      </div>
+
+      <div class="case">
+        <div class="case-head"><h3>The invoice that matched perfectly</h3><span class="case-tag">Vendor impersonation</span></div>
+        <p>A recurring monthly invoice arrives from the correct vendor name, the correct logo, and a signature block copied from real previous emails — only the bank account details are wrong. The invoice amount, PO number, and line items are all legitimate, so nothing looks unusual. Payments go out on the usual date, which means nobody is scrutinising this one.</p>
+        <div class="lesson"><b>Lesson —</b> Any change to bank account details for a payment gets confirmed by phone against a number you already had on file. A one-time phone call prevents an entire year of wrong payouts.</div>
+      </div>
+
+      <div class="compare-wrap">
+        <table class="compare">
+          <thead><tr><th>Dimension</th><th>Bulk / spray phishing</th><th>Spear phishing (targeted)</th></tr></thead>
+          <tbody>
+            <tr><th>Sent to</th><td>Thousands of addresses, no personalisation</td><td>You specifically, using real details about you</td></tr>
+            <tr><th>Research involved</th><td>None — templates are reused across campaigns</td><td>Hours to days: your role, your manager, public talks, out-of-office replies</td></tr>
+            <tr><th>Grammar and tone</th><td>Often noticeably off</td><td>Near-perfect, matched to how your colleagues write</td></tr>
+            <tr><th>Goal</th><td>Harvest any credentials that land</td><td>A specific, high-value outcome — one payment, one account, one person</td></tr>
+            <tr><th>Why generic red-flag lists miss it</th><td>The usual tells are present</td><td>Almost none of the usual tells are present</td></tr>
+            <tr><th>The defence that still works</th><td colspan="2" style="text-align:center;"><b style="color:var(--ink);">Verifying unusual or high-stakes requests out of band — because the attacker's weakest point is the assumption that a legitimate-looking request is legitimate.</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="response">
+    <div class="wrap">
+      <div class="eyebrow">If it already happened</div>
+      <h2 class="section-title">You clicked. Now what?</h2>
+      <div class="section-intro"><p>The most useful thing you can do is stop and report quickly. Every minute matters, and you will not be punished for reporting — organisations can only protect you if they know. Work down this list in order.</p></div>
+
+      <ol class="timeline">
+        <li class="urgent">
+          <span class="time">immediately</span>
+          <b>Disconnect from the network if you downloaded something</b>
+          <p>If you ran an attachment or installed software, unplug the ethernet cable and switch off Wi-Fi. Don't keep browsing — attackers who gain a foothold start moving laterally within minutes.</p>
+        </li>
+        <li class="urgent">
+          <span class="time">within 5 minutes</span>
+          <b>Report it — before you delete anything</b>
+          <p>Use the phishing-report button in your mail client, or forward it to your security team. Reporting blocks the sender for everyone else who received the same message. Deleting first destroys the evidence and the headers investigators need.</p>
+        </li>
+        <li class="urgent">
+          <span class="time">within 5 minutes</span>
+          <b>If you entered a password, change it now — from a different device</b>
+          <p>Use a known-good device: another laptop or phone that wasn't involved. Change the password, then <b>sign out of all active sessions</b> wherever the service offers it, so a stolen session token dies with it.</p>
+        </li>
+        <li>
+          <span class="time">within 5 minutes</span>
+          <b>If you entered an OTP or approved an MFA prompt, revoke the sessions and call the bank</b>
+          <p>An OTP you handed over completes a login for the attacker. Call the number on the back of your card, not a number in the message, and ask for the account to be re-secured and any new device access removed.</p>
+        </li>
+        <li>
+          <span class="time">within 15 minutes</span>
+          <b>If you entered card or bank details, freeze and dispute</b>
+          <p>Call your bank's fraud line immediately. Most banks can stop a pending transaction, and reporting within hours materially improves your chance of a full reversal.</p>
+        </li>
+        <li>
+          <span class="time">same day</span>
+          <b>Check for the slow, quiet compromise</b>
+          <p>Attackers rarely stop at the first click. Review recent account activity: sent items, new inbox rules that auto-forward mail, changed recovery addresses, new payees, MFA prompts you don't recognise, and login history from unfamiliar locations.</p>
+        </li>
+        <li>
+          <span class="time">same day</span>
+          <b>Tell your team if it was a shared or public link</b>
+          <p>If the payload affected a document, drive, or internal tool, others may have been exposed through the same link. Early notice turns a contained incident into a small one.</p>
+        </li>
+        <li>
+          <span class="time">this week</span>
+          <b>Write down what happened while it's fresh</b>
+          <p>Time of the click, the exact link, what you typed, what you saw afterwards. A five-minute timeline helps investigators enormously and speeds up insurance or bank claims.</p>
+        </li>
+      </ol>
+
+      <div class="callout safe">
+        <b class="title">What will not happen</b>
+        <p>You will not be fired for reporting a click quickly. The expensive outcome is the one that stays unreported — an attacker moving quietly through mailboxes and payment systems for weeks. Fast, honest reporting is the single most valuable thing a person in an organisation can do after a mistake.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="practices">
+    <div class="wrap">
+      <div class="eyebrow">Field guide</div>
+      <h2 class="section-title">Habits that hold up under pressure</h2>
+      <ul class="checklist">
+        <li><span class="mark">✓</span><div><b>Check the actual sender address, not the display name</b><span class="sub">Display names are free to fake; the domain after the @ is what to read carefully.</span></div></li>
+        <li><span class="mark">✓</span><div><b>Hover before you click</b><span class="sub">On desktop, hovering shows the real destination URL in the status bar before you commit.</span></div></li>
+        <li><span class="mark">✓</span><div><b>Go direct instead of following a link</b><span class="sub">For anything account-related, open the site yourself or use a bookmark you already trust.</span></div></li>
+        <li><span class="mark">✓</span><div><b>Verify unusual requests out of band</b><span class="sub">A call or message through a separate, known channel confirms whether a request is real in seconds.</span></div></li>
+        <li><span class="mark">✓</span><div><b>Slow down when you feel rushed</b><span class="sub">Urgency is a manufactured feeling, not a reason to skip a check — legitimate requests survive a two-minute pause.</span></div></li>
+        <li><span class="mark">✓</span><div><b>Report instead of just deleting</b><span class="sub">Reporting a phish gets it blocked for every colleague who received the same message.</span></div></li>
+      </ul>
+
+      <div class="callout">
+        <b class="title">Two habits that carry the most weight</b>
+        <p><b>Go direct.</b> For anything account-related, open the app or type the address yourself. Most successful phishing chains are defeated entirely by a habit of navigating rather than clicking.</p>
+        <p style="margin-top:8px;"><b>Verify out of band.</b> A request that arrives on one channel gets confirmed on another — a phone call to a number you already had. This one habit defeats spear phishing, MFA fatigue, and business email compromise, none of which have a technical tell.</p>
+      </div>
+
+      <div class="pager">
+        <a href="#channels"><span>← Previous</span><b>Beyond email</b></a>
+        <a class="right" href="#response"><span>Next →</span><b>If you clicked</b></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="cheatsheet">
+    <div class="wrap">
+      <div class="eyebrow">Pocket reference</div>
+      <h2 class="section-title">The whole module on one screen</h2>
+      <div class="section-intro"><p>Everything from the sections above, condensed into six cards. Print this page or keep it beside your monitor — it takes about twenty seconds to run through before clicking anything unfamiliar.</p></div>
+
+      <div class="cheat">
+        <div class="cheat-card">
+          <h3><span class="emoji">✉️</span> In the message</h3>
+          <ul>
+            <li><b>Sender domain</b> — read past the display name, all the way to the text after the @</li>
+            <li><b>Generic greeting</b> — "Dear User" or "Valued Customer" instead of your name</li>
+            <li><b>Manufactured deadline</b> — 24 hours, 3 hours, "final notice"</li>
+            <li><b>Threatening consequence</b> — suspension, closure, legal action, salary hold</li>
+            <li><b>Unsolicited attachment</b> — especially .html, .zip, .xlsm, or a password-protected PDF</li>
+            <li><b>Unexplained credential request</b> — any prompt to "confirm" your password, PIN, or OTP</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h3><span class="emoji">🔗</span> In the link</h3>
+          <ul>
+            <li><b>Hover first</b> — the real destination appears before you commit to anything</li>
+            <li><b>Read the domain right to left</b> — the true owner is the text just before the first single <b>/</b></li>
+            <li><b>Look-alike characters</b> — <b>rn</b> for m, <b>0</b> for O, <b>1</b> for l, <b>vv</b> for w</li>
+                       <li><b>Extra words before the real name</b> — <b>paypal.com.secure-login.net</b> is not paypal.com</li>
+            <li><b>URL shorteners</b> — bit.ly and similar hide the destination entirely</li>
+            <li><b>No padlock reassurance</b> — encryption only means the connection is private, not that the site is honest</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h3><span class="emoji">📱</span> On your phone</h3>
+          <ul>
+            <li><b>Never read out an OTP</b> — not to a bank, not to "IT", not to anyone</li>
+            <li><b>Long-press to preview</b> the destination before opening a link in a message</li>
+            <li><b>Caller ID proves nothing</b> — numbers are trivially spoofed</li>
+            <li><b>Reaching a real bank?</b> Hang up and call the number on the back of your card</li>
+            <li><b>QR code posters</b> offering fee-free payment or vouchers are a known scam format</li>
+            <li><b>Verify a new contact</b> through a channel you already trust before sending anything</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h3><span class="emoji">🧠</span> In your own reaction</h3>
+          <ul>
+            <li><b>Urgency is a signal</b> — manufactured feelings are themselves a red flag</li>
+            <li><b>Authority is not proof</b> — a title in a signature means nothing</li>
+            <li><b>Curiosity is the hook</b> — "see who viewed your profile" is designed to bypass scepticism</li>
+            <li><b>Two-minute rule</b> — a legitimate request survives a pause; a scam resists one</li>
+            <li><b>Ask one question</b> — "can you confirm this another way?" defuses most attempts</li>
+            <li><b>Nothing is too trivial to verify</b> — low-stakes phishing is often just a test</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h3><span class="emoji">🛡️</span> If you're careful, still</h3>
+          <ul>
+            <li><b>Report, don't delete</b> — protects everyone who got the same message</li>
+            <li><b>Change from a clean device</b> if credentials or a code were entered</li>
+            <li><b>End active sessions</b>, not just the password</li>
+            <li><b>Call the bank</b> using the number on your card, not the message</li>
+            <li><b>Check for auto-forward rules</b> and new recovery addresses</li>
+            <li><b>Write the timeline down</b> while it's fresh</li>
+          </ul>
+        </div>
+
+        <div class="cheat-card">
+          <h3><span class="emoji">✅</span> Five-second scan</h3>
+          <ul>
+            <li><b>Who</b> — is the domain after the @ genuinely theirs?</li>
+            <li><b>Where</b> — where does the link actually go, before the first single /?</li>
+            <li><b>What</b> — are they asking for a password, OTP, PIN, or payment?</li>
+            <li><b>When</b> — is there a deadline designed to stop me thinking?</li>
+            <li><b>How sure</b> — would I be suspicious of this exact request arriving by phone or in person?</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pager">
+        <a href="#practices"><span>← Previous</span><b>Habits that hold up</b></a>
+        <a class="right" href="#glossary"><span>Next →</span><b>Glossary</b></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="glossary">
+    <div class="wrap">
+      <div class="eyebrow">Reference</div>
+      <h2 class="section-title">Terms you'll hear in the wild</h2>
+      <div class="section-intro"><p>Security teams use these terms loosely, so it helps to know what they actually mean in practice.</p></div>
+
+      <dl class="glossary">
+        <div><dt>phishing</dt><dd>A message that impersonates a trusted party to steal credentials, money, or information. The generic term for the whole family.</dd></div>
+        <div><dt>spear phishing</dt><dd>Phishing researched and written <b>for one specific recipient</b>, using real details about them. Far more successful than bulk mail.</dd></div>
+        <div><dt>whaling</dt><dd>Spear phishing aimed at senior executives — the people with authority to move money quickly.</dd></div>
+        <div><dt>vishing / smishing / quishing</dt><dd>Phishing by voice call, by SMS or instant message, and by QR code respectively.</dd></div>
+        <div><dt>smishing (SMS specifics)</dt><dd>Fake delivery, KYC, prize, and bank-alert texts. Aims you at a cloned page that captures OTP or card details.</dd></div>
+        <div><dt>malvertising</dt><dd>Malicious code delivered through online ads, including fake search results and sponsored "support" links.</dd></div>
+        <div><dt>bec</dt><dd>Business email compromise — a phishing variant aimed purely at inducing a payment or a change of bank details. <b>No malware, no technical tell at all.</b></dd></div>
+        <div><dt>push bombing / MFA fatigue</dt><dd>Flooding a victim's phone with login prompts so they approve one to make the noise stop, handing the attacker a session.</dd></div>
+        <div><dt>look-alike domain</dt><dd>A domain built to resemble a real one — extra words, hyphens, or substituted characters — so it reads correctly at a glance.</dd></div>
+        <div><dt>typosquatting</dt><dd>Registering a domain that is a plausible misspelling of a popular site, to catch people typing quickly.</dd></div>
+        <div><dt>credential harvesting</dt><dd>Any page whose only purpose is to collect a username and password, usually cloned from a real login screen.</dd></div>
+        <div><dt>session token</dt><dd>A value that proves you're logged in. Stealing it grants access <b>without the password</b>, which is why you must end sessions, not just change passwords.</dd></div>
+        <div><dt>pretexting</dt><dd>The invented story the attacker tells to justify their request. The pretext is what makes the urgency feel reasonable.</dd></div>
+      </dl>
+
+      <div class="callout safe">
+        <b class="title">The whole module in one line</b>
+        <p>Attackers have better tools than you do. What they don't have is a legitimate reason for the request they're making — so give that reason a second source before you act on it, and the advantage becomes yours.</p>
+      </div>
+
+      <div class="pager">
+        <a href="#cheatsheet"><span>← Previous</span><b>Cheat sheet</b></a>
+        <a class="right" href="#quiz"><span>Next →</span><b>Knowledge check</b></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="quiz" style="padding-bottom:120px;">
+    <div class="wrap">
+      <div class="eyebrow">Check yourself</div>
+      <h2 class="section-title">Thirteen questions, no penalty for guessing</h2>
+      <div class="section-intro"><p>Read each scenario and pick the best response. You'll get an explanation either way — the misses are the useful part.</p></div>
+
+      <div class="quiz-shell">
+        <div class="quiz-progress"><div class="quiz-progress-bar" id="progress-bar"></div></div>
+        <div class="quiz-body" id="quiz-body"></div>
+      </div>
+
+      <div class="pager">
+        <a href="#glossary"><span>← Previous</span><b>Glossary</b></a>
+        <a class="right" href="#cheatsheet"><span>Reference →</span><b>Back to the cheat sheet</b></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>Security Awareness Training</b> · When in doubt, report it — you're never wrong for asking.</p>
+    <p style="margin-top:8px;font-size:12.5px;">Scenarios are composites of common attack patterns. Verify all procedures against your own organisation's security policy before applying them at work.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---------- Email specimen ----------
+  var flags = [
+    { id:'sender', label:'sender', text:'"IT Security" <no-reply@it-support-alerts.co>',
+      note:'The display name says "IT Security," but the real domain — it-support-alerts.co — has nothing to do with your company. Always read past the display name.' },
+    { id:'subject', label:'subject', text:'⚠ Action Required: Password Expires Today',
+      note:'A manufactured deadline creates urgency, which is designed to make you act before you think to check anything else.' },
+    { id:'greeting', label:'greeting', text:'Dear Valued Employee,',
+      note:'A generic greeting instead of your actual name suggests this was sent in bulk, not written for you personally by anyone who knows you.' },
+    { id:'link', label:'link', text:'verify your account here',
+      note:'The visible text says "verify your account," but the actual destination is almost always a different, look-alike domain — hover over any link before clicking.' },
+    { id:'pressure', label:'pressure', text:'failure to verify within 3 hours will result in permanent suspension',
+      note:'Threatening a fast, severe consequence pushes you to skip your normal instinct to double-check.' },
+    { id:'signoff', label:'signoff', text:'IT Support Team',
+      note:'No named person, no phone extension, no way to verify who actually sent this — legitimate internal IT usually signs with a real name.' }
+  ];
+
+  function flagHTML(f){
+    return '<span class="flag" data-id="'+f.id+'" onclick="toggleFlag(this)">'+f.text+'<span class="pin">!</span>'+
+      '<span class="flag-note"><b>Red flag</b>'+f.note+'</span></span>';
+  }
+
+  document.getElementById('sender-flag-wrap').innerHTML = flagHTML(flags[0]);
+  document.getElementById('subject-flag-wrap').innerHTML = flagHTML(flags[1]);
+  document.getElementById('mail-body').innerHTML =
+    '<p>'+flagHTML(flags[2])+'</p>' +
+    '<p>We detected unusual activity on your account. To avoid disruption, please '+flagHTML(flags[3])+' and confirm your credentials.</p>' +
+    '<p>Please note: '+flagHTML(flags[4])+'.</p>' +
+    '<a href="#" class="fake-btn" onclick="return false;">Verify My Account</a>' +
+    '<p style="margin-top:16px;">Thank you,<br>'+flagHTML(flags[5])+'</p>';
+
+  var foundSet = {};
+  window.toggleFlag = function(el){
+    document.querySelectorAll('.flag.open').forEach(function(o){ if(o!==el) o.classList.remove('open'); });
+    el.classList.toggle('open');
+    var id = el.getAttribute('data-id');
+    if(!foundSet[id]){
+      foundSet[id] = true;
+      document.getElementById('found-count').textContent = Object.keys(foundSet).length;
+    }
+  };
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.flag')){
+      document.querySelectorAll('.flag.open').forEach(function(o){ o.classList.remove('open'); });
+    }
+  });
+
+  // ---------- Quiz ----------
+  var questions = [
+    {
+      q: "You get an email from your bank's exact domain, formatted perfectly, asking you to confirm your PIN by replying. What's the concern?",
+      opts: ["Nothing — the domain is correct so it's safe", "Legitimate banks never ask you to send a PIN by email, regardless of how official it looks", "It's fine as long as you reply from your own email"],
+      correct: 1,
+      explain: "No legitimate bank or service will ever ask you to send a PIN, password, or full card number by email. A correct-looking domain can also be spoofed — the request itself is the red flag."
+    },
+    {
+      q: "A coworker's email asks you to buy gift cards for a client and send the codes right away, saying they're stuck in a meeting. What should you do first?",
+      opts: ["Buy the cards quickly since it sounds time-sensitive", "Reply to the email asking for more details", "Contact the coworker directly through a different channel, like a phone call, to confirm"],
+      correct: 2,
+      explain: "This is a classic BEC (business email compromise) pattern: urgency plus an unusual request plus an unreachable requester. Verifying through a separate channel — not by replying to the same email — confirms whether it's really them."
+    },
+    {
+      q: "Which URL is most likely a phishing attempt impersonating a bank called Chase?",
+      opts: ["https://www.chase.com/login", "https://chase.com.account-verify.net/login", "https://secure.chase.com"],
+      correct: 1,
+      explain: "The real domain is whatever sits directly before the first single slash. Here that's account-verify.net — \"chase.com\" is just a subdomain-like prefix, not the actual chase.com site."
+    },
+    {
+      q: "You receive repeated MFA push notifications you didn't request, followed by a call from 'IT' asking you to approve one. What's the right move?",
+      opts: ["Approve it once so the notifications stop", "Deny the request and report the incident to security", "Ignore both and go back to work"],
+      correct: 1,
+      explain: "This is MFA fatigue / push-bombing. Denying the prompt and reporting it stops the attacker from getting into the account and alerts your security team to an active attempt."
+    },
+    {
+      q: "An email creates a sense of urgency, claims to be from a senior executive, and asks for something unusual. Which social engineering tactics are being combined?",
+      opts: ["Urgency and authority", "Curiosity and reciprocity", "None — this is a normal business email"],
+      correct: 0,
+      explain: "Urgency (act fast) and authority (a senior figure is asking) are frequently combined specifically because together they discourage the normal instinct to pause and verify."
+    },
+    {
+      q: "What's the most useful thing to do with a suspicious email, beyond not clicking anything in it?",
+      opts: ["Delete it immediately so it's gone", "Forward it to friends as a warning", "Report it through your organization's official phishing-report tool or IT team"],
+      correct: 2,
+      explain: "Reporting lets security teams block the sender and warn everyone else who may have received the same message — deleting alone only protects you."
+    },
+    {
+      q: "You get a WhatsApp message from a friend's number — which the friend has confirmed is not them — saying they're locked out and need a code sent to them. What now?",
+      opts: ["Send the code, it's clearly an emergency", "Ask the friend to make a new account and call you on your usual number", "Reply asking the sender to prove their identity"],
+      correct: 1,
+      explain: "The account is compromised, so replying to that chat talks to the attacker. Verify through a channel you already trusted — a voice call on a known number — before doing anything involving money or codes."
+    },
+    {
+      q: "You clicked a link in a text message and it asked for your net-banking password, which you entered. What is the single most urgent action?",
+      opts: ["Change the password from a different, clean device and end all active sessions", "Delete the message so there's no evidence", "Wait 24 hours to see if anything looks wrong"],
+      correct: 0,
+      explain: "Credentials are assumed stolen the moment they're entered on a page you reached from a link. Change the password from a device the attacker can't touch, and end existing sessions so any stolen session token is invalidated."
+    },
+    {
+      q: "A QR code on a poster promises \"50% off if you scan to pay, no queue.\" Why is this a recognised scam pattern?",
+      opts: ["QR codes can't be secured by any company", "Scanning hides the destination, so you can't inspect the URL before landing on it", "All QR codes are regulated as financial products"],
+      correct: 1,
+      explain: "QR codes are a delivery mechanism that skips the one check that normally protects you — reading the address bar. Legitimate businesses needing payment give you a phone number, a URL typed out, and a receipt."
+    },
+    {
+      q: "A message is unusually well written, uses your actual manager's name, and references a real project you're working on. What's the most likely explanation?",
+      opts: ["It's safe because it knows real details — only con artists are sloppy", "It's spear phishing, researched specifically against you or your team", "The message was just forwarded to you by a colleague"],
+      correct: 1,
+      explain: "Personalised detail is what makes spear phishing effective, not what makes it safe. Attackers research their targets from public talks, out-of-office replies, and company pages. No amount of good grammar is evidence of legitimacy."
+    },
+    {
+      q: "Why can a padlock icon next to a suspicious URL be ignored as a sign of safety?",
+      opts: ["Padlocks are only shown on sites with sensitive data", "The padlock means the connection is encrypted, not that the site is genuine — anyone can obtain a certificate", "The padlock is fake unless the site is a .com"],
+      correct: 1,
+      explain: "A valid certificate is free and takes minutes to obtain, so a padlock only tells you the connection is private. The site itself is still a clone run by an attacker. Judge the domain, not the icon."
+    },
+    {
+      q: "A caller claiming to be from your bank's fraud department asks you to read out the six-digit code that just arrived by SMS. What should you do?",
+      opts: ["Read it out — the code is harmless on its own", "Refuse, hang up, and call the bank on the number printed on your card", "Read out the first three digits only"],
+      correct: 1,
+      explain: "A one-time code is the missing half of your login. Anyone who has it can complete authentication as you. No bank will ever ask for it, and the caller's ID proves nothing because numbers are easily spoofed."
+    },
+    {
+      q: "Which request is the clearest sign of a business email compromise attempt?",
+      opts: ["A colleague asking you to review a document by Thursday", "A supplier emailing new bank account details, asking that payments be redirected from this month onward", "A team newsletter with a schedule update"],
+      correct: 1,
+      explain: "Changing payment details is the highest-value request an attacker can make and carries almost no technical signature to spot. It must be confirmed by phone against a number you already had on file before any payment is sent."
+    }
+  ];
+
+  var current = 0, score = 0, answered = false;
+  var body = document.getElementById('quiz-body');
+  var bar = document.getElementById('progress-bar');
+
+  function renderQuestion(){
+    answered = false;
+    var qd = questions[current];
+    bar.style.width = ((current)/questions.length*100)+'%';
+    var optsHTML = qd.opts.map(function(o,i){
+      return '<button class="quiz-opt" data-i="'+i+'" onclick="answerQuiz('+i+')">'+o+'</button>';
+    }).join('');
+    body.innerHTML =
+      '<div class="quiz-meta">QUESTION '+(current+1)+' OF '+questions.length+' &middot; SCORE '+score+'</div>' +
+      '<div class="quiz-q">'+qd.q+'</div>' +
+      '<div class="quiz-opts">'+optsHTML+'</div>' +
+      '<div class="quiz-explain" id="quiz-explain"><b id="explain-verdict"></b><span id="explain-text"></span></div>' +
+      '<div class="quiz-footer"><button class="btn btn-primary" id="next-btn" style="display:none;" onclick="nextQuestion()">'+(current===questions.length-1?'See results':'Next question')+' →</button></div>';
+  }
+
+  window.answerQuiz = function(i){
+    if(answered) return;
+    answered = true;
+    var qd = questions[current];
+    var opts = document.querySelectorAll('.quiz-opt');
+    opts.forEach(function(btn,idx){
+      btn.disabled = true;
+      if(idx===qd.correct) btn.classList.add('correct');
+      else if(idx===i) btn.classList.add('incorrect');
+    });
+    if(i===qd.correct) score++;
+    var ex = document.getElementById('quiz-explain');
+    document.getElementById('explain-verdict').textContent = (i===qd.correct ? "That's right. " : "Not quite. ");
+    document.getElementById('explain-text').textContent = qd.explain;
+    ex.classList.add('show');
+    document.getElementById('next-btn').style.display = 'inline-flex';
+  };
+
+  window.nextQuestion = function(){
+    current++;
+    if(current < questions.length){
+      renderQuestion();
+    } else {
+      bar.style.width = '100%';
+      var pct = Math.round(score/questions.length*100);
+      var msg = pct===100 ? "Perfect score — you caught every scenario, including the ones with no technical tell." :
+                pct>=80 ? "Strong instincts. The ones you missed are worth a second look before you close this tab." :
+                pct>=50 ? "Reasonable baseline. Re-read the tactics and the response list — those cover most real attempts." :
+                "Worth another pass. Start with the cheat sheet, then run through the channels section again.";
+      body.innerHTML =
+        '<div class="quiz-result">' +
+          '<div class="score">'+score+' / '+questions.length+'</div>' +
+          '<p>'+msg+'</p>' +
+          '<button class="btn btn-primary" onclick="restartQuiz()">Try again</button>' +
+        '</div>';
+    }
+  };
+
+  window.restartQuiz = function(){ current=0; score=0; renderQuestion(); };
+
+  renderQuestion();
+
+  // ---------- Theme, reading progress, print ----------
+  var root = document.documentElement;
+  var stored = null;
+  try { stored = localStorage.getItem('phish-theme'); } catch(e){}
+  if (stored) root.setAttribute('data-theme', stored);
+
+  document.getElementById('theme-btn').addEventListener('click', function(){
+    var isDark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('phish-theme', next); } catch(e){}
+  });
+
+  document.getElementById('print-btn').addEventListener('click', function(){ window.print(); });
+
+  var bar2 = document.getElementById('read-progress');
+  function updateProgress(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    bar2.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive:true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  // highlight the section currently in view
+  var links = {};
+  document.querySelectorAll('nav.crumbs a').forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var sec = document.getElementById(id);
+    if (sec) links[id] = a;
+  });
+  if ('IntersectionObserver' in window && Object.keys(links).length){
+    var visible = {};
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        visible[en.target.id] = en.isIntersecting ? en.intersectionRatio : 0;
+      });
+      var best = null, bestVal = 0;
+      for (var id in visible){ if (visible[id] > bestVal){ bestVal = visible[id]; best = id; } }
+      document.querySelectorAll('nav.crumbs a').forEach(function(a){ a.classList.remove('active'); });
+      if (best && links[best]) links[best].classList.add('active');
+    }, { threshold:[0, .25, .5, .75, 1], rootMargin:'-76px 0px -40% 0px' });
+    Object.keys(links).forEach(function(id){ io.observe(document.getElementById(id)); });
+  }
+})();
+</script>
+</body>
+</html>
